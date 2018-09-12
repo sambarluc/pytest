@@ -1107,6 +1107,22 @@ def test_parameterset_for_parametrize_marks(testdir, mark):
         assert result_mark.kwargs.get("run") is False
 
 
+def test_parameterset_for_fail_at_parametrize(testdir):
+    testdir.makeini(
+        "[pytest]\n{}={}".format(EMPTY_PARAMETERSET_OPTION, "fail_at_parametrize")
+    )
+
+    config = testdir.parseconfig()
+    from _pytest.mark import pytest_configure, get_empty_parameterset_mark
+    from _pytest.mark.structures import ParametrizeError
+
+    pytest_configure(config)
+
+    with pytest.raises(ParametrizeError) as err:
+        get_empty_parameterset_mark(config, ["a"], all)
+        assert str(err).startswith("Empty parameter set")
+
+
 def test_parameterset_for_parametrize_bad_markname(testdir):
     with pytest.raises(pytest.UsageError):
         test_parameterset_for_parametrize_marks(testdir, "bad")

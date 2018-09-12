@@ -14,6 +14,11 @@ from six.moves import map
 EMPTY_PARAMETERSET_OPTION = "empty_parameter_set_mark"
 
 
+class ParametrizeError(Exception):
+
+    """Error collecting arguments in parametrize."""
+
+
 def alias(name, warning=None):
     getter = attrgetter(name)
 
@@ -37,6 +42,8 @@ def get_empty_parameterset_mark(config, argnames, func):
         mark = MARK_GEN.skip
     elif requested_mark == "xfail":
         mark = MARK_GEN.xfail(run=False)
+    elif requested_mark == "fail_at_parametrize":
+        raise ParametrizeError("Empty parameter set")
     else:
         raise LookupError(requested_mark)
     fs, lineno = getfslineno(func)
